@@ -1,7 +1,5 @@
 # Timing Feedback for AI-Assisted RTL Optimization
 
-**Research project scaffold** aligned with the Phase 2_3 proposal by Alan Kuo and Sanjay Sampath.
-
 ## Research question
 Does providing fine-grained *critical-path feedback* to an LLM yield greater **formally equivalent, mapped timing improvements** than (A) RTL alone or (B) RTL plus aggregate timing?
 
