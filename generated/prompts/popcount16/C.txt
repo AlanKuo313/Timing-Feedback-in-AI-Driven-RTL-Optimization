@@ -1,0 +1,84 @@
+        You are optimizing a synthesizable Verilog module for setup timing after
+        mapping with Yosys/ABC to a fixed standard-cell library. Return ONLY
+        complete Verilog source code, with the same top-level module name popcount16.
+
+        Requirements for ALL conditions:
+        - Preserve every port, width, polarity, function and exact cycle latency.
+        - No added pipeline stages, retiming, clock gating or interface changes.
+        - No black boxes, latches, pragmas that bypass synthesis, or test-only hacks.
+        - Prefer meaningful architectural transformations (carry structure,
+          comparison architecture, balancing selection/count networks) over
+          cosmetic refactoring. ABC may normalize superficial code changes.
+        - Do not assume the transformation is better: final judgment comes
+          from formal equivalence and mapped timing/area measurements.
+        - Output a SINGLE entire Verilog module with no Markdown fences.
+
+        ORIGINAL VERILOG:
+        // 16-bit population counter with two clocked pipeline stages.
+module popcount16 (
+    input wire clk,
+    input wire [15:0] bits,
+    output reg [4:0] count
+);
+    reg [15:0] bits_reg;
+    reg [4:0] count_comb;
+    integer i;
+    always @* begin
+        count_comb = 5'd0;
+        for (i = 0; i < 16; i = i + 1)
+            count_comb = count_comb + {4'd0, bits_reg[i]};
+    end
+    always @(posedge clk) begin
+        bits_reg <= bits;
+        count <= count_comb;
+    end
+endmodule
+
+BASELINE AGGREGATE FEEDBACK:
+Worst setup slack: -0.29 ns
+Worst negative slack (clipped to <= 0): -0.29 ns
+Critical-path arrival time: 0.72 ns
+
+FINE-GRAINED CRITICAL-PATH FEEDBACK:
+Startpoint: _141_ (rising edge-triggered flip-flop clocked by core_clk)
+Endpoint: _139_ (rising edge-triggered flip-flop clocked by core_clk)
+Path Group: core_clk
+Path Type: max
+
+    Cap    Slew   Delay    Time   Description
+-----------------------------------------------------------------------
+           0.00    0.00    0.00   clock core_clk (rise edge)
+                   0.00    0.00   clock network delay (ideal)
+           0.00    0.00    0.00 ^ _141_/CK (DFF_X1)
+   4.53    0.01    0.09    0.09 ^ _141_/Q (DFF_X1)
+   4.73    0.04    0.06    0.15 ^ _083_/Z (XOR2_X1)
+   4.94    0.04    0.07    0.22 ^ _085_/Z (XOR2_X1)
+   4.72    0.03    0.05    0.27 ^ _087_/ZN (XNOR2_X1)
+   4.94    0.04    0.07    0.34 ^ _088_/Z (XOR2_X1)
+   4.59    0.03    0.05    0.39 ^ _090_/ZN (XNOR2_X1)
+   4.94    0.04    0.07    0.46 ^ _098_/Z (XOR2_X1)
+   4.93    0.03    0.05    0.51 ^ _100_/ZN (XNOR2_X1)
+   4.21    0.03    0.05    0.57 ^ _101_/ZN (XNOR2_X1)
+   4.65    0.01    0.04    0.60 ^ _102_/ZN (OR2_X1)
+   3.01    0.01    0.01    0.62 v _121_/ZN (NOR2_X1)
+   5.64    0.04    0.05    0.66 ^ _129_/ZN (OAI21_X1)
+   1.37    0.01    0.06    0.72 v _134_/Z (MUX2_X1)
+           0.01    0.00    0.72 v _139_/D (DFF_X1)
+                           0.72   data arrival time
+
+           0.00    0.50    0.50   clock core_clk (rise edge)
+                   0.00    0.50   clock network delay (ideal)
+                  -0.02    0.48   clock uncertainty
+                   0.00    0.48   clock reconvergence pessimism
+                           0.48 ^ _139_/CK (DFF_X1)
+                  -0.04    0.44   library setup time
+                           0.44   data required time
+-----------------------------------------------------------------------
+                           0.44   data required time
+                          -0.72   data arrival time
+-----------------------------------------------------------------------
+                          -0.29   slack (VIOLATED)
+
+
+
+CONDITION C: Identify the structural cause of this measured critical path.

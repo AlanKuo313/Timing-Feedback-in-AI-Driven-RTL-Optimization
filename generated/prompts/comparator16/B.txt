@@ -1,0 +1,39 @@
+        You are optimizing a synthesizable Verilog module for setup timing after
+        mapping with Yosys/ABC to a fixed standard-cell library. Return ONLY
+        complete Verilog source code, with the same top-level module name comparator16.
+
+        Requirements for ALL conditions:
+        - Preserve every port, width, polarity, function and exact cycle latency.
+        - No added pipeline stages, retiming, clock gating or interface changes.
+        - No black boxes, latches, pragmas that bypass synthesis, or test-only hacks.
+        - Prefer meaningful architectural transformations (carry structure,
+          comparison architecture, balancing selection/count networks) over
+          cosmetic refactoring. ABC may normalize superficial code changes.
+        - Do not assume the transformation is better: final judgment comes
+          from formal equivalence and mapped timing/area measurements.
+        - Output a SINGLE entire Verilog module with no Markdown fences.
+
+        ORIGINAL VERILOG:
+        // Registered unsigned comparator. Outputs compare the inputs captured one edge earlier.
+module comparator16 (
+    input wire clk,
+    input wire [15:0] a,
+    input wire [15:0] b,
+    output reg greater,
+    output reg equal
+);
+    reg [15:0] a_reg, b_reg;
+    always @(posedge clk) begin
+        a_reg <= a;
+        b_reg <= b;
+        greater <= (a_reg > b_reg);
+        equal <= (a_reg == b_reg);
+    end
+endmodule
+
+BASELINE AGGREGATE FEEDBACK:
+Worst setup slack: 0.07 ns
+Worst negative slack (clipped to <= 0): 0.0 ns
+Critical-path arrival time: 0.36 ns
+
+CONDITION B: Only the above aggregate metrics are supplied.

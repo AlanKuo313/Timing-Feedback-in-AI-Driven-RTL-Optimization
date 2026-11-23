@@ -1,0 +1,11 @@
+{
+  "worst_slack_ns": -0.3,
+  "wns_ns": -0.3,
+  "critical_path_delay_ns": 0.75,
+  "critical_startpoint": "_198_ (rising edge-triggered flip-flop clocked by core_clk)",
+  "critical_endpoint": "_195_ (rising edge-triggered flip-flop clocked by core_clk)",
+  "area": 314.412,
+  "library_path": "/home/alan313/projects/rtl_feedback_project/config/lib/NangateOpenCellLibrary_typical.lib",
+  "clock_period_ns": 0.5,
+  "source_sha256": "fdcc332141a1758b6837459b8e27be1d6d6a17979d1b8cd57e8f84312abee69f"
+}

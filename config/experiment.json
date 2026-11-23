@@ -1,0 +1,9 @@
+{
+  "clock_period_ns": 0.50,
+  "clock_uncertainty_ns": 0.02,
+  "io_delay_ns": 0.05,
+  "max_area_increase_pct": 10.0,
+  "attempts_per_condition": 2,
+  "designs": ["adder16", "comparator16", "priority_encoder16", "popcount16"],
+  "liberty_path": "config/lib/NangateOpenCellLibrary_typical.lib"
+}

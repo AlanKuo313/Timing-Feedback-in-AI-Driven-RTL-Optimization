@@ -1,0 +1,12 @@
+__pycache__/
+.pytest_cache/
+*.pyc
+config/lib/*.lib
+generated/prompts/*/
+generated/candidates/*/
+results/baseline/
+results/manual/
+results/trials/
+results/results.csv
+results/summary.md
+.env

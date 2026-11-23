@@ -1,0 +1,52 @@
+        You are optimizing a synthesizable Verilog module for setup timing after
+        mapping with Yosys/ABC to a fixed standard-cell library. Return ONLY
+        complete Verilog source code, with the same top-level module name priority_encoder16.
+
+        Requirements for ALL conditions:
+        - Preserve every port, width, polarity, function and exact cycle latency.
+        - No added pipeline stages, retiming, clock gating or interface changes.
+        - No black boxes, latches, pragmas that bypass synthesis, or test-only hacks.
+        - Prefer meaningful architectural transformations (carry structure,
+          comparison architecture, balancing selection/count networks) over
+          cosmetic refactoring. ABC may normalize superficial code changes.
+        - Do not assume the transformation is better: final judgment comes
+          from formal equivalence and mapped timing/area measurements.
+        - Output a SINGLE entire Verilog module with no Markdown fences.
+
+        ORIGINAL VERILOG:
+        // Highest set input bit has priority. index = 0 when valid is 0.
+module priority_encoder16 (
+    input wire clk,
+    input wire [15:0] req,
+    output reg valid,
+    output reg [3:0] index
+);
+    reg [15:0] req_reg;
+    always @(posedge clk) begin
+        req_reg <= req;
+        valid <= |req_reg;
+        if      (req_reg[15]) index <= 4'd15;
+        else if (req_reg[14]) index <= 4'd14;
+        else if (req_reg[13]) index <= 4'd13;
+        else if (req_reg[12]) index <= 4'd12;
+        else if (req_reg[11]) index <= 4'd11;
+        else if (req_reg[10]) index <= 4'd10;
+        else if (req_reg[9])  index <= 4'd9;
+        else if (req_reg[8])  index <= 4'd8;
+        else if (req_reg[7])  index <= 4'd7;
+        else if (req_reg[6])  index <= 4'd6;
+        else if (req_reg[5])  index <= 4'd5;
+        else if (req_reg[4])  index <= 4'd4;
+        else if (req_reg[3])  index <= 4'd3;
+        else if (req_reg[2])  index <= 4'd2;
+        else if (req_reg[1])  index <= 4'd1;
+        else                  index <= 4'd0;
+    end
+endmodule
+
+BASELINE AGGREGATE FEEDBACK:
+Worst setup slack: 0.15 ns
+Worst negative slack (clipped to <= 0): 0.0 ns
+Critical-path arrival time: 0.29 ns
+
+CONDITION B: Only the above aggregate metrics are supplied.

@@ -1,0 +1,42 @@
+        You are optimizing a synthesizable Verilog module for setup timing after
+        mapping with Yosys/ABC to a fixed standard-cell library. Return ONLY
+        complete Verilog source code, with the same top-level module name popcount16.
+
+        Requirements for ALL conditions:
+        - Preserve every port, width, polarity, function and exact cycle latency.
+        - No added pipeline stages, retiming, clock gating or interface changes.
+        - No black boxes, latches, pragmas that bypass synthesis, or test-only hacks.
+        - Prefer meaningful architectural transformations (carry structure,
+          comparison architecture, balancing selection/count networks) over
+          cosmetic refactoring. ABC may normalize superficial code changes.
+        - Do not assume the transformation is better: final judgment comes
+          from formal equivalence and mapped timing/area measurements.
+        - Output a SINGLE entire Verilog module with no Markdown fences.
+
+        ORIGINAL VERILOG:
+        // 16-bit population counter with two clocked pipeline stages.
+module popcount16 (
+    input wire clk,
+    input wire [15:0] bits,
+    output reg [4:0] count
+);
+    reg [15:0] bits_reg;
+    reg [4:0] count_comb;
+    integer i;
+    always @* begin
+        count_comb = 5'd0;
+        for (i = 0; i < 16; i = i + 1)
+            count_comb = count_comb + {4'd0, bits_reg[i]};
+    end
+    always @(posedge clk) begin
+        bits_reg <= bits;
+        count <= count_comb;
+    end
+endmodule
+
+BASELINE AGGREGATE FEEDBACK:
+Worst setup slack: -0.29 ns
+Worst negative slack (clipped to <= 0): -0.29 ns
+Critical-path arrival time: 0.72 ns
+
+CONDITION B: Only the above aggregate metrics are supplied.
